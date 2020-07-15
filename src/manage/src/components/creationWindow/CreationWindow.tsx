@@ -49,7 +49,8 @@ export default class CreationWindow extends React.Component<{}, CreationWindowSt
 
     socketConnect = () => {
         this.setState({ processingRequest: true })
-        const socket = io('http://localhost:3001')
+        const host = `http://${window.location.hostname}:3001`
+        const socket = io(host)
 
         socket.on('connect', () => {
             this.setState({socketState: { connected: true, lastMessage: ''}})
