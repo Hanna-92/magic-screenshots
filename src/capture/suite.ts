@@ -43,7 +43,8 @@ const runSuite = async (suite: Suite, options?: Options) => {
         defaultViewport: {
             height: 1080,
             width: 1920
-        }
+        },
+        timeout: 0
     });
 
     if(options && options.broswerHooks && options.broswerHooks.onBrowserReady) {
@@ -82,7 +83,7 @@ const runSuite = async (suite: Suite, options?: Options) => {
         final = JSON.stringify(results)
     }
     writeFileSync(`${saveDir}/index.json`, final)
-    process.exit(0)
+    return true
 }
 
 export default runSuite
