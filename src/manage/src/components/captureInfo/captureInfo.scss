@@ -4,7 +4,8 @@
 
 .capture-info-container {
     display: flex;
-    padding-top: 40px;
+    padding: 40px;
+    padding-top: 80px;
     margin: auto;
 }
 
@@ -19,7 +20,7 @@
         max-height: 80vh;
         object-position: top left;
         cursor: pointer;
-    }
+    }   
 }
 
 .capture-info-container-close {
@@ -37,13 +38,9 @@
 .capture-info-table {
     border-collapse: collapse;
     margin: auto;
-    .left-col {
-        background-color: #134D36;
-    }
     td {
         padding: 10px 30px;
         border: solid 1;
-        background-color: #26996B;
     }
     tr {
         border-bottom: 2px solid rgba(0,0,0, 0.2);

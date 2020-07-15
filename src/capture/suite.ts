@@ -34,6 +34,10 @@ const runSuite = async (suite: Suite, options?: Options) => {
         task: "Warming up..."
     })
 
+    if(options && options.captureHooks && options.captureHooks.onCaptureState) {
+        options.captureHooks.onCaptureState('The camera-person is unpacking their lenses')
+    }
+
     const browser = await puppeteer.launch({
         headless: true,
         defaultViewport: {

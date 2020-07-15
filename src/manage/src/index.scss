@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: "Questrial", sans-serif;
+  font-family: "Open Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -11,11 +11,15 @@ code {
 }
 
 h1 {
-  font-family: "Average Sans", sans-serif;
+  font-weight: bold;
 }
 
-h3 {
-  font-weight: 100;
+h1, h3 {
+  font-family: "Questrial", sans-serif;
+}
+
+p {
+  font-size: 15px;
 }
 
 .app-show-creator-btn {

@@ -24,10 +24,9 @@ io.on('connection', (socket) => {
             selector: data.selector
         }
 
-        
         const suite = {
             captureList: [newSpec],
-            desiredLanguages: ['en']
+            desiredLanguages: data.languages
         }
 
         runSuite(suite, {

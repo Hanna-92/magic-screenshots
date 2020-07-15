@@ -1,0 +1,124 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: black;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.app-title {
+  display: flex;  
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  width: 100%;
+  padding: 20px;
+  background: white;
+}
+
+.snaps-logo {
+  color: black;
+  align-self: flex-end;
+}
+
+.snaps-title {
+  margin-bottom: 0;
+  font-weight: 900;
+  font-size: 35px;
+  font-family: 'Questrial';
+}
+
+.dbx-img {
+  height: 40px;
+  margin-right: 8px;
+} 
+.dbx-txt { 
+  height: 40px;
+}
+
+
+.header {
+  width: 100%;
+  background-color: #0d2f81;
+  padding: 50px;
+  display:flex;
+  flex-direction: row;
+  text-align: left;
+  justify-content: space-around;
+  align-items: center;
+  color: white;
+  button {
+    border-radius: 0px;
+    margin: 0px;
+    color: black;
+    background: white;
+    border: none;
+    padding: 10px 30px;
+    font-size: 15px;
+  }
+  h1, h3 {
+    color: #ffafa2;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  p {
+    font-size: 15px;
+  }
+
+  .header-text {
+    width: 50%;
+  }
+}
+.demo-gif{ 
+  width: 30%;
+}
+.carousel {
+  display: flex;
+  width: 30%;
+  max-height: 235px;
+  overflow: hidden;
+
+  .carousel-inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 8px;
+  }
+
+}
+
+.logo {
+  cursor: pointer
+}

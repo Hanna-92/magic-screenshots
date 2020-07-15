@@ -46,9 +46,6 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
 
     render = () => (
         <div className='capture-info-container'>
-            <div className='capture-info-container-close' onClick={() => this.props.onClose()}>
-                <b>X</b>
-            </div>
             <div className='capture-info-image'>
                 <img ref={this.imgRef} src={this.props.capture[0]} onClick={() => this.setState({showImage:true})}></img>
             </div>
@@ -60,7 +57,7 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
                     <td className='left-col'>Languages</td>
                     <td> 
                         {
-                            <span>{this.calculateLanguages()}</span>
+                            <p>{this.calculateLanguages()}</p>
                         }
                     </td>
                 </tr>

@@ -1,10 +1,15 @@
 .creation-container {
-    margin: auto;
+    
+    width: 100%;
+    padding: 40px 80px;
 }
 .creation-form {
     display: flex;
     flex-direction: column;
-    div {
+    padding: 0px 80px;
+    align-items: center;
+    justify-items: center;
+    .creation-input {
         display: flex;
         flex-direction: row;
         width: 100%;
@@ -14,6 +19,10 @@
             margin-right: 20px;
         }
     }
+
+    .help {
+        cursor: pointer;
+    }
 }
 
 .creation-submit {
@@ -21,10 +30,24 @@
 }
 
 .creation-header {
+    text-align: left;;
     margin-bottom: 30px;
 }
 
 .creation-status {
     font-variant-caps: small-caps;
     font-size: 20px;
+}
+
+.language-selector {
+    display:inline-block;
+    p, input {
+        display: inline-block;
+    }
+    p {
+        margin-right: 3px;
+    }
+    input { 
+        margin-right: 10px;
+    }
 }
