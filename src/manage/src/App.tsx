@@ -27,6 +27,12 @@ export class App extends React.Component<{}, AppState> {
         this.setState({
           fileIndex: json
         })
+      }).catch(() => {
+        this.setState({
+          fileIndex: {
+            captures: []
+          }
+        })
       })
     })
   }
