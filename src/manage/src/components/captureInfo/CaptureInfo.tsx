@@ -3,6 +3,7 @@ import { Modal, Button } from 'react-bootstrap'
 import iso from 'iso-639-1'
 import pathToName from '../../utils/pathToName'
 import './captureInfo.scss'
+import io from 'socket.io-client'
 
 //@ts-ignore
 import oxford from 'oxford-join'
@@ -18,6 +19,8 @@ export interface CaptureInfoState {
     imgResolution: {width: number, height: number}
     activeImage: number
     showDiffs: boolean
+    updating: boolean
+    updateMessage: string
 }
 
 export default class CaptureInfo extends React.Component<CaptureInfoProps, CaptureInfoState> {
@@ -29,7 +32,9 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
             showImage: false,
             imgResolution: {width:0, height:0},
             activeImage: 0,
-            showDiffs: false
+            showDiffs: false,
+            updating: false,
+            updateMessage: ''
         }
         this.imgRef = React.createRef();
     }
@@ -40,11 +45,12 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
             this.setState({imgResolution: {width:img.clientWidth, height:img.clientHeight}})
         }
     }
-    calculateLanguages = () => {
+
+    calculateLanguageCodes = () => {
         const filterDiffs = (this.props.capture.files as Array<string>).filter(item => item.indexOf('_old') === -1 && item.indexOf('_diff') === -1)
-        const langs = filterDiffs.map(x => x.substring(x.lastIndexOf('_') + 1, x.lastIndexOf('.')))
-        return oxford(langs.map(lang => iso.getName(lang)))
+        return filterDiffs.map(x => x.substring(x.lastIndexOf('_') + 1, x.lastIndexOf('.')))
     }
+    calculateLanguages = () => oxford(this.calculateLanguageCodes().map(lang => iso.getName(lang)))
 
     hasDiff = () => {
         if(!this.props.capture.files) { return false }
@@ -104,6 +110,31 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
 
     }
 
+    regenScreenshots = () => {
+        const host = `http://${window.location.hostname}:3001`
+        const socket = io(host)
+        this.setState({updating: true})
+        socket.on('connect', () => {
+            socket.on('progress', (s: string) => {
+                this.setState({updateMessage: s})
+            })
+            socket.emit('createNew', {
+                name: this.props.capture.name,
+                baseUrl: this.props.capture.baseUrl,
+                selector: this.props.capture.selector,
+                languages: this.calculateLanguageCodes()
+            }, (reply: any) => {
+                this.setState({updateMessage: reply})
+            })
+        })
+    }
+
+    renderUpdateStatus = () => (
+        <div>
+            <img src='cute.gif'/>
+            <p>{this.state.updateMessage}</p>
+        </div>
+    )
     render = () => (
         <div className='capture-info'>
             {this.hasDiff() && 
@@ -138,6 +169,12 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
                     </tr>
                     </tbody>
                 </table>
+                { !this.state.updating  ?
+                    <Button onClick={() => {
+                        this.regenScreenshots()
+                    }}>Regenerate Screenshots</Button>
+                    : this.renderUpdateStatus()
+                }
                 </div>
                 {this.renderModal()}
             </div>

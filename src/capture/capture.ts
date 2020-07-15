@@ -40,6 +40,7 @@ const capture = async (browser: puppeteer.Browser, captureSpec: ImageCaptureSpec
     await page.screenshot({path: `${savePath}.png`, clip });
     if(oldImage) {
         const diffPath = compareImages(oldImage, savePath)
+        if(!diffPath) { return [`${savePath}.png`]}
         return [`${savePath}.png`, diffPath, oldSavePath ]
     }
     return [`${savePath}.png`]
@@ -60,11 +61,13 @@ const compareImages = (oldImage: Buffer, newImagePath: string) => {
     const {width, height} = img1;
     const diff = new PNG({width, height});
      
-    pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0.1});
-    const diffPath = newImagePath + '_diff.png'
-    writeFileSync(diffPath, PNG.sync.write(diff));
-
-    return diffPath
+    const mismatch = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0.3});
+    if(mismatch > 0) {
+        const diffPath = newImagePath + '_diff.png'
+        writeFileSync(diffPath, PNG.sync.write(diff));
+        return diffPath
+    }
+    return undefined
 }
 
 export default capture

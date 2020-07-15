@@ -7,7 +7,7 @@ import * as puppeteer from 'puppeteer'
 import createFolderIfNotExists from './util/createFolderIfNotExists'
 import { writeFileSync, readFileSync } from 'fs'
 import CaptureHooks from './extensions/captureHooks'
-import { mergeAndConcat } from 'merge-anything'
+import { merge } from 'merge-anything'
 export type Suite = {
     captureList: ImageCaptureSpec[]
     desiredLanguages: string[]
@@ -82,11 +82,12 @@ const runSuite = async (suite: Suite, options?: Options) => {
     let final: string
     if(existingObj) {
         const existingJSON = JSON.parse(existingObj)
-        const merged = mergeAndConcat(existingJSON, results)
+        const merged = merge(existingJSON, results)
         final = JSON.stringify(merged)
     } else {
         final = JSON.stringify(results)
     }
+
     writeFileSync(`${saveDir}/index.json`, final)
     return true
 }
