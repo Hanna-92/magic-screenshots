@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ts-node src/capture/index.ts",
     "start": "ts-node src/capture/server/index.ts"
   },
   "author": "",
@@ -12,12 +12,16 @@
   "dependencies": {
     "@types/chalk": "^2.2.0",
     "express": "^4.17.1",
+    "pixelmatch": "^5.2.1",
+    "pngjs": "^5.0.0",
     "puppeteer": "^5.1.0",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "@types/cli-progress": "^3.7.0",
     "@types/config": "0.0.36",
+    "@types/pixelmatch": "^5.2.1",
+    "@types/pngjs": "^3.4.2",
     "@types/puppeteer": "^3.0.1",
     "chalk": "^4.1.0",
     "cli-progress": "^3.8.2",

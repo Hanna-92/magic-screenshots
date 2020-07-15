@@ -16,7 +16,7 @@ export default class Gallery extends React.Component<GalleryProps> {
                 <div className='gallery'>
                     {keys.map(k => (
                         <div className='gallery-tab' key={k} onClick={() => this.props.tabSelected(k)}>
-                            <img src={this.props.captures[k][0]}></img>
+                            <img src={this.props.captures[k].files[0]}></img>
                             <p className='gallery-name' > {pathToName(k)} </p>
                         </div>
                     ))}

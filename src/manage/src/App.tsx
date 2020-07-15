@@ -48,7 +48,7 @@ export class App extends React.Component<{}, AppState> {
 
   renderCreationPrompt = () => {
     if(!this.state.fileIndex.captures) { return }
-    let images = Object.keys(this.state.fileIndex.captures).map(k => this.state.fileIndex.captures[k]).flat()
+    let images = Object.keys(this.state.fileIndex.captures).map(k => this.state.fileIndex.captures[k].files).flat().filter(file => file.indexOf('_old') === -1 && file.indexOf('_diff') === -1)
     shuffle(images)
     return (
       <>

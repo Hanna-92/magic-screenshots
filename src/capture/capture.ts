@@ -1,9 +1,12 @@
 import * as puppeteer from 'puppeteer'
+import {readFileSync, renameSync, writeFileSync} from 'fs'
+import { PNG } from 'pngjs'
+
+const pixelmatch = require('pixelmatch')
+
 import ImageCaptureSpec from './spec';
 import createFolderIfNotExists from './util/createFolderIfNotExists';
 import { Options } from './suite';
-
-let b: puppeteer.Browser
 
 const capture = async (browser: puppeteer.Browser, captureSpec: ImageCaptureSpec, lang: string, options: Options) => {
     let { selector, baseUrl, name } = captureSpec
@@ -25,9 +28,43 @@ const capture = async (browser: puppeteer.Browser, captureSpec: ImageCaptureSpec
     const saveDir = './src/manage/public/captures'
     const specDir = `${saveDir}/${fileName}`
     createFolderIfNotExists(specDir)
-    const savePath = `${specDir}/${fileName}_${lang}.png`
-    await page.screenshot({path: savePath, clip });
-    return savePath
+    const savePath = `${specDir}/${fileName}_${lang}`
+
+    const oldImage = existingImage(`${savePath}.png`)
+    const oldSavePath = savePath + '_old.png'
+    if(oldImage) {
+        try {
+            renameSync(`${savePath}.png`, oldSavePath)
+        } catch {}
+    }
+    await page.screenshot({path: `${savePath}.png`, clip });
+    if(oldImage) {
+        const diffPath = compareImages(oldImage, savePath)
+        return [`${savePath}.png`, diffPath, oldSavePath ]
+    }
+    return [`${savePath}.png`]
+}
+
+const existingImage = (path: string) => {
+    try {
+        return readFileSync(path)
+    } catch {
+        return undefined
+    }
+}
+
+const compareImages = (oldImage: Buffer, newImagePath: string) => {
+     
+    const img1 = PNG.sync.read(oldImage);
+    const img2 = PNG.sync.read(readFileSync(`${newImagePath}.png`));
+    const {width, height} = img1;
+    const diff = new PNG({width, height});
+     
+    pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0.1});
+    const diffPath = newImagePath + '_diff.png'
+    writeFileSync(diffPath, PNG.sync.write(diff));
+
+    return diffPath
 }
 
 export default capture

@@ -53,7 +53,10 @@ const runSuite = async (suite: Suite, options?: Options) => {
     bar.increment(1)
     for await (const captureItem of captureList) {
         const jsName = captureItem.name.replace(' ', '_').toLowerCase()
-        results.captures[jsName] = []
+        results.captures[jsName] = {
+            files: [],
+            ...captureItem
+        }
         for await (const language of desiredLanguages) {
             const task = `Capturing ${captureItem.name} in `
             bar.increment(0, {
@@ -63,9 +66,11 @@ const runSuite = async (suite: Suite, options?: Options) => {
             if(options && options.captureHooks && options.captureHooks.onCaptureState) {
                 options.captureHooks.onCaptureState(task + language)
             }
-            let saved = await capture(browser, captureItem, language, options)
-            saved = saved.substr(saved.indexOf('/captures/'))
-            results.captures[jsName].push(saved)
+            let savedPaths = await capture(browser, captureItem, language, options)
+            savedPaths.forEach(saved => {
+                saved = saved.substr(saved.indexOf('/captures/'))
+                results.captures[jsName].files.push(saved)
+            })
             bar.increment(1)
         }
     }

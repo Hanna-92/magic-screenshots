@@ -2,6 +2,37 @@
     text-transform: capitalize;
 }
 
+.capture-info {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.capture-info-warning-panel {
+    width: 100%;
+    padding: 10px;
+    border-bottom: 1px solid rgba(0,0,0, 0.2);
+}
+
+.capture-info-warning {
+    color: red;
+}
+
+.capture-diffs {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+.capture-diffs-buttons {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 20px;
+    justify-content: flex-end;
+
+    button {
+        margin: 0px 10px;
+    }
+}
 .capture-info-container {
     display: flex;
     padding: 40px;
