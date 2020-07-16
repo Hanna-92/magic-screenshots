@@ -9,6 +9,7 @@ import ImageCaptureSpec from '../spec';
 import runSuite from '../suite';
 import loginExtension from '../example_extension/loginExtension';
 import languageUrlRewrite from '../example_extension/languageParamExtensions';
+import deleteImage from '../delete';
 
 app.get('/', (req, res) => {
   res.send('hello http')
@@ -38,6 +39,13 @@ io.on('connection', (socket) => {
             onError: (e) => socket.emit('error', e)
         })
     });
+
+    socket.on('delete', (data, fn) => {
+      fn(`We're working on your request to delete ${data.name}`);
+      socket.emit(`Deleting ${data.name}`)
+      deleteImage(data.name)
+      socket.emit(`${data.name} deleted`)
+    })
 });
 
 https.listen(3001, () => {

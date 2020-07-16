@@ -7,6 +7,7 @@ import io from 'socket.io-client'
 
 //@ts-ignore
 import oxford from 'oxford-join'
+import nameToPath from '../../utils/nameToPath'
 
 export interface CaptureInfoProps {
     name: string
@@ -22,6 +23,7 @@ export interface CaptureInfoState {
     updating: boolean
     updateMessage: string
     lastError: string
+    showConfirm: boolean
 }
 
 export default class CaptureInfo extends React.Component<CaptureInfoProps, CaptureInfoState> {
@@ -36,7 +38,8 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
             showDiffs: false,
             updating: false,
             updateMessage: '',
-            lastError: ''
+            lastError: '',
+            showConfirm: false
         }
         this.imgRef = React.createRef();
     }
@@ -137,6 +140,51 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
         })
     }
 
+    deleteScreenshot = () => {
+        const host = `https://${window.location.hostname}:3001`
+        const socket = io(host)
+        this.setState({updating: true})
+        socket.on('connect_error', (e: Error) => {
+            this.setState({lastError: e.message})
+        })
+        socket.on('connect', () => {
+            socket.on('progress', (s: string) => {
+                this.setState({updateMessage: s})
+            })
+            socket.on('error', (e: string) => {
+                this.setState({lastError: e.toString()})
+            })
+            socket.emit('delete', {
+                name: nameToPath(this.props.capture.name)
+            }, (reply: any) => {
+                this.setState({updateMessage: reply})
+            })
+        })
+    }
+
+    handleClose = () => {
+        this.setState({showConfirm: false})
+    }
+    renderDeleteConfirm = () => (
+        <Modal show={this.state.showConfirm} onHide={this.handleClose}>
+            <Modal.Header closeButton>
+            <Modal.Title>Are you sure?</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Do you really want to delete {this.props.capture.name}</Modal.Body>
+            <Modal.Footer>
+            <Button variant="secondary" onClick={this.handleClose}>
+                No
+            </Button>
+            <Button variant="primary" onClick={() => {
+                this.handleClose()
+                this.deleteScreenshot()
+            }}>
+                Yes
+            </Button>
+            </Modal.Footer>
+        </Modal>
+    )
+
     renderUpdateStatus = () => (
         <div>
             { this.state.lastError !== '' ? <p className='error-warning'>!</p> : <img src='cute.gif'/> }
@@ -153,6 +201,7 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
                 </div> 
             }
             <div className='capture-info-container'>
+                <Button className='capture-info-delete' onClick={() => this.setState({showConfirm: true})}><i className="fa fa-trash" aria-hidden="true"></i></Button>
                 <div className='capture-info-image'>
                     <img ref={this.imgRef} src={this.props.capture.files[0]} onClick={() => this.setState({showImage:true})}></img>
                 </div>
@@ -179,13 +228,14 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
                     </tbody>
                 </table>
                 { !this.state.updating  ?
-                    <Button onClick={() => {
+                    <Button className='regen-btn' onClick={() => {
                         this.regenScreenshots()
                     }}>Regenerate Screenshots</Button>
                     : this.renderUpdateStatus()
                 }
                 </div>
                 {this.renderModal()}
+                {this.renderDeleteConfirm()}
             </div>
         </div>
     )

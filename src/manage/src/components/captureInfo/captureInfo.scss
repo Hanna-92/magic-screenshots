@@ -105,3 +105,21 @@
 .modal-dialog.modal-dialog-centered {
     max-width: 90%;
 }
+
+.capture-info-delete {
+    background-color: #bd0404;
+    color: white;
+    position: absolute;
+    right: 30px;
+    margin-top: -50px;
+    border: none;
+    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+}
+
+.regen-btn {
+    margin-top: 20px;
+}
+
+.modal .modal-content {
+    background: white;
+}
