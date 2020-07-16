@@ -11,7 +11,7 @@ import loginExtension from '../example_extension/loginExtension';
 import languageUrlRewrite from '../example_extension/languageParamExtensions';
 
 app.get('/', (req, res) => {
-  res.send('hello https')
+  res.send('hello http')
 });
 
 io.on('connection', (socket) => {
