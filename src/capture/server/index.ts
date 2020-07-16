@@ -2,7 +2,7 @@ var app = require('express')();
 const fs = require('fs')
 var https = require('https').createServer({
     key: fs.readFileSync('config/certs/server.key'),
-    cert: fs.readFileSync('config/certs/server.cert')
+    cert: fs.readFileSync('config/certs/server.crt')
 },app);
 var io = require('socket.io')(https);
 import ImageCaptureSpec from '../spec';
@@ -34,7 +34,8 @@ io.on('connection', (socket) => {
 
         runSuite(suite, {
             broswerHooks: {onBrowserReady: loginExtension},
-            captureHooks: {urlRewrite: languageUrlRewrite, onCaptureState: (s) => socket.emit('progress', s)}
+            captureHooks: {urlRewrite: languageUrlRewrite, onCaptureState: (s) => socket.emit('progress', s)},
+            onError: (e) => socket.emit('error', e)
         })
     });
 });

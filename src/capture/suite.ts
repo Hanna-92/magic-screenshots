@@ -16,6 +16,7 @@ export type Suite = {
 export type Options = {
     broswerHooks?: BrowserHooks
     captureHooks?: CaptureHooks
+    onError?: (error: string) => void
 }
 
 const runSuite = async (suite: Suite, options?: Options) => {
@@ -34,8 +35,15 @@ const runSuite = async (suite: Suite, options?: Options) => {
         task: "Warming up..."
     })
 
-    if(options && options.captureHooks && options.captureHooks.onCaptureState) {
-        options.captureHooks.onCaptureState('The camera-person is unpacking their lenses')
+    try {
+        if(options && options.captureHooks && options.captureHooks.onCaptureState) {
+            options.captureHooks.onCaptureState('The camera-person is unpacking their lenses')
+        }
+    } catch(e) {
+        if(options.onError){
+            options.onError(e)
+        }
+        return false
     }
 
     const browser = await puppeteer.launch({
@@ -47,48 +55,70 @@ const runSuite = async (suite: Suite, options?: Options) => {
         timeout: 0
     });
 
-    if(options && options.broswerHooks && options.broswerHooks.onBrowserReady) {
-        await options.broswerHooks.onBrowserReady(browser)
+    try {
+        if(options && options.broswerHooks && options.broswerHooks.onBrowserReady) {
+            await options.broswerHooks.onBrowserReady(browser)
+        }
+    } catch(e) {
+        if(options.onError){
+            options.onError(e)
+        }
+        return false
     }
     bar.increment(1)
-    for await (const captureItem of captureList) {
-        const jsName = captureItem.name.replace(' ', '_').toLowerCase()
-        results.captures[jsName] = {
-            files: [],
-            ...captureItem
-        }
-        for await (const language of desiredLanguages) {
-            const task = `Capturing ${captureItem.name} in `
-            bar.increment(0, {
-                task,
-                lang: language
-            })
-            if(options && options.captureHooks && options.captureHooks.onCaptureState) {
-                options.captureHooks.onCaptureState(task + language)
-            }
-            let savedPaths = await capture(browser, captureItem, language, options)
-            savedPaths.forEach(saved => {
-                saved = saved.substr(saved.indexOf('/captures/'))
-                results.captures[jsName].files.push(saved)
-            })
-            bar.increment(1)
-        }
-    }
 
-    let existingObj: string
     try {
-        existingObj = readFileSync(`${saveDir}/index.json`, 'utf8')
-    } catch {}
-    let final: string
-    if(existingObj) {
-        const existingJSON = JSON.parse(existingObj)
-        const merged = merge(existingJSON, results)
-        final = JSON.stringify(merged)
-    } else {
-        final = JSON.stringify(results)
+        for await (const captureItem of captureList) {
+            const jsName = captureItem.name.replace(' ', '_').toLowerCase()
+            results.captures[jsName] = {
+                files: [],
+                ...captureItem
+            }
+            for await (const language of desiredLanguages) {
+                const task = `Capturing ${captureItem.name} in `
+                bar.increment(0, {
+                    task,
+                    lang: language
+                })
+                if(options && options.captureHooks && options.captureHooks.onCaptureState) {
+                    options.captureHooks.onCaptureState(task + language)
+                }
+                let savedPaths = await capture(browser, captureItem, language, options)
+                savedPaths.forEach(saved => {
+                    saved = saved.substr(saved.indexOf('/captures/'))
+                    results.captures[jsName].files.push(saved)
+                })
+                bar.increment(1)
+            }
+        }
+    } catch(e) {
+        if(options.onError){
+            options.onError(e)
+        }
+        return false
     }
 
-    writeFileSync(`${saveDir}/index.json`, final)
+    try {
+    let existingObj: string
+        try {
+            existingObj = readFileSync(`${saveDir}/index.json`, 'utf8')
+        } catch {}
+        let final: string
+        if(existingObj) {
+            const existingJSON = JSON.parse(existingObj)
+            const merged = merge(existingJSON, results)
+            final = JSON.stringify(merged)
+        } else {
+            final = JSON.stringify(results)
+        }
+
+        writeFileSync(`${saveDir}/index.json`, final)
+    } catch(e) {
+        if(options.onError){
+            options.onError(e)
+        }
+        return false
+    }
     return true
 }
 
