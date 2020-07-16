@@ -55,7 +55,7 @@ export class App extends React.Component<{}, AppState> {
       <div className='header-text'>
         <h3>Create the perfect screenshots</h3>
           <h1>Up to date, localized, device specific</h1>
-          <p>With magic snaps, you can take control of the screenshots in your article content. They will always be up to date, relevant to the customer and beautiful!</p>
+          <p>With Rolosnap, you can take control of the screenshots in your article content. They will always be up to date, relevant to the customer and beautiful!</p>
             <Button className='app-show-creator-btn' variant='primary' onClick={() => this.setState({showCreator: true})}>Get Snapping</Button>
         </div>
         <Carousel controls={ false } indicators={ false } interval={1500}>
@@ -123,7 +123,7 @@ export class App extends React.Component<{}, AppState> {
               <img className='dbx-txt' src="https://cfl.dropboxstatic.com/static/images/logo_catalog/wordmark--dropbox_m1.svg"/>
             </div>
             <div className='snaps-logo'>
-              <h1 className='snaps-title'>Magic Snaps! 📸</h1>
+              <h1 className='snaps-title'>Rolosnap! 📸</h1>
             </div>
           </div>
           { this.renderHeader() }
