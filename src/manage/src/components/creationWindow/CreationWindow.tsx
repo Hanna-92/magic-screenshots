@@ -5,10 +5,9 @@ import io from 'socket.io-client'
 
 export interface CreationWindowState {
     processingRequest: boolean
-    socketState: {
-        connected: boolean,
-        lastMessage: string
-    },
+    connected: boolean,
+    lastMessage: string,
+    lastError: string
     screenshotName: string,
     url: string,
     selector: string,
@@ -26,10 +25,9 @@ export default class CreationWindow extends React.Component<{}, CreationWindowSt
         super(props)
         this.state = {
             processingRequest: false,
-            socketState: {
-                connected: false,
-                lastMessage: ''
-            },
+            connected: false,
+            lastMessage: '',
+            lastError: '',
             screenshotName: '',
             url: '',
             selector: '',
@@ -51,18 +49,23 @@ export default class CreationWindow extends React.Component<{}, CreationWindowSt
         this.setState({ processingRequest: true })
         const host = `http://${window.location.hostname}:3001`
         const socket = io(host)
-
+        socket.on('connect_error', (e: Error) => {
+            console.log(e)
+            this.setState({lastError: e.message})
+        })
         socket.on('connect', () => {
-            this.setState({socketState: { connected: true, lastMessage: ''}})
+            this.setState({connected: true})
             this.sendRequest(socket)
             socket.on('progress', (s: string) => {
-                this.setState({socketState: {connected:true, lastMessage: s}})
+                this.setState({lastMessage: s})
+            })
+            socket.on('error', (e: string) => {
+                this.setState({lastError: e})
             })
         })
     }
 
     sendRequest = (socket: SocketIOClient.Socket) => {
-        console.log('emit event')
         // @ts-ignore
         const languages = Object.keys(this.state.languageChoices).filter(lang => this.state.languageChoices[lang])
         socket.emit('createNew', {
@@ -71,7 +74,7 @@ export default class CreationWindow extends React.Component<{}, CreationWindowSt
             selector: this.state.selector,
             languages
         }, (reply: any) => {
-            this.setState({socketState: {connected: true, lastMessage: reply}})
+            this.setState({lastMessage: reply})
         })
     }
 
@@ -225,8 +228,9 @@ export default class CreationWindow extends React.Component<{}, CreationWindowSt
                 : (
                 <div className='creation-connection-container'>
                     <h3 className='creation-header'>Creating your new snaps!</h3>
-                    <Spinner animation="border" />
-                    <p className='creation-status'>{this.state.socketState.lastMessage}</p>
+                    { this.state.lastError !== '' ? <p className='error-warning'>!</p> : <Spinner animation="border" /> }
+                    <p className='creation-status'>{this.state.lastMessage}</p>
+                    <p className='creation-error'>{this.state.lastError}</p>
                 </div>
                 )
             }

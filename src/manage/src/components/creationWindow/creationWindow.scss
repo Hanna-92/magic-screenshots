@@ -51,3 +51,16 @@
         margin-right: 10px;
     }
 }
+.creation-error {
+    color: red;
+    text-transform: capitalize;
+    font-variant: small-caps;
+    font-size: 30px;
+}
+
+.error-warning {
+    color: red;
+    font-weight: bold;
+    font-size: 60px;
+    text-shadow: 1px 1px 1px rgba(0,0,0, 0.3);
+}
