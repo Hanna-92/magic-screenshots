@@ -21,6 +21,7 @@ export interface CaptureInfoState {
     showDiffs: boolean
     updating: boolean
     updateMessage: string
+    lastError: string
 }
 
 export default class CaptureInfo extends React.Component<CaptureInfoProps, CaptureInfoState> {
@@ -34,7 +35,8 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
             activeImage: 0,
             showDiffs: false,
             updating: false,
-            updateMessage: ''
+            updateMessage: '',
+            lastError: ''
         }
         this.imgRef = React.createRef();
     }
@@ -111,12 +113,18 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
     }
 
     regenScreenshots = () => {
-        const host = `http://${window.location.hostname}:3001`
+        const host = `https://${window.location.hostname}:3001`
         const socket = io(host)
         this.setState({updating: true})
+        socket.on('connect_error', (e: Error) => {
+            this.setState({lastError: e.message})
+        })
         socket.on('connect', () => {
             socket.on('progress', (s: string) => {
                 this.setState({updateMessage: s})
+            })
+            socket.on('error', (e: string) => {
+                this.setState({lastError: e.toString()})
             })
             socket.emit('createNew', {
                 name: this.props.capture.name,
@@ -131,8 +139,9 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
 
     renderUpdateStatus = () => (
         <div>
-            <img src='cute.gif'/>
+            { this.state.lastError !== '' ? <p className='error-warning'>!</p> : <img src='cute.gif'/> }
             <p>{this.state.updateMessage}</p>
+            <p className='creation-error'>{this.state.lastError}</p>
         </div>
     )
     render = () => (

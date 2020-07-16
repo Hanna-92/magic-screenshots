@@ -47,10 +47,9 @@ export default class CreationWindow extends React.Component<{}, CreationWindowSt
 
     socketConnect = () => {
         this.setState({ processingRequest: true })
-        const host = `http://${window.location.hostname}:3001`
+        const host = `https://${window.location.hostname}:3001`
         const socket = io(host)
         socket.on('connect_error', (e: Error) => {
-            console.log(e)
             this.setState({lastError: e.message})
         })
         socket.on('connect', () => {
@@ -60,7 +59,7 @@ export default class CreationWindow extends React.Component<{}, CreationWindowSt
                 this.setState({lastMessage: s})
             })
             socket.on('error', (e: string) => {
-                this.setState({lastError: e})
+                this.setState({lastError: e.toString()})
             })
         })
     }
