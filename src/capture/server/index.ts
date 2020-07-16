@@ -1,14 +1,17 @@
 var app = require('express')();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http);
-import Suite from '../suite'
+const fs = require('fs')
+var https = require('https').createServer({
+    key: fs.readFileSync('config/certs/server.key'),
+    cert: fs.readFileSync('config/certs/server.cert')
+},app);
+var io = require('socket.io')(https);
 import ImageCaptureSpec from '../spec';
 import runSuite from '../suite';
 import loginExtension from '../example_extension/loginExtension';
 import languageUrlRewrite from '../example_extension/languageParamExtensions';
 
-app.post('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+app.get('/', (req, res) => {
+  res.send('hello https')
 });
 
 io.on('connection', (socket) => {
@@ -36,6 +39,6 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(3001, () => {
+https.listen(3001, () => {
   console.log('listening on *:3001');
 });

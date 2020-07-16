@@ -111,7 +111,7 @@ export default class CaptureInfo extends React.Component<CaptureInfoProps, Captu
     }
 
     regenScreenshots = () => {
-        const host = `http://${window.location.hostname}:3001`
+        const host = `https://${window.location.hostname}:3001`
         const socket = io(host)
         this.setState({updating: true})
         socket.on('connect', () => {
